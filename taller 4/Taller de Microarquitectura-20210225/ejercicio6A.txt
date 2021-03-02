@@ -1,4 +1,0 @@
-        |00| JMP demoSIG
-demoSIG |02| SET R0 , 0x0A
-        |04| SIG R0
-        |06| JMP demoSIG
