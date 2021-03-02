@@ -1,5 +1,8 @@
 JMP demoSIG
+
 demoSIG:
-SET R0, 0x0A
+SET R0, 0x0E
+
+bucle:
 SIG R0
-JMP demoSIG ; genera el valor en R0 aumento de uno en uno
+JMP bucle ; genera el valor en R0 aumento de uno en uno
