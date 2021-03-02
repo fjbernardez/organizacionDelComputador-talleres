@@ -62,8 +62,26 @@
     RB_enOut  ALU_enA  RB_selectIndexOut=0
     ALU_OP=cte0x01 ALU_opW
     ALU_enOut ALU_enB
-    ALU_OP=ADD ALU_opW
+    ALU_OP=ADD ALU_opW=0 ; no escribo flags
     RB_enIn   ALU_enOut RB_selectIndexIn=0
+    reset_microOp
+
+01010: ; NEG - ejercicio 6.b
+    RB_enOut  ALU_enA  RB_selectIndexOut=0
+    ALU_OP=cte0xFF ALU_opW=0
+    ALU_enOut ALU_enB
+    ALU_OP=XOR ALU_opW=0 ; no escribo flags
+    ALU_enOut ALU_enA
+    ALU_OP=cte0x01 ALU_opW=0
+    ALU_enOut ALU_enB
+    ALU_OP=ADD ALU_opW=0
+    RB_enIn   ALU_enOut RB_selectIndexIn=0
+    reset_microOp
+
+01011: ; MIX - ejercicio 6.c
+    RB_enOut  MIX_EN_A  RB_selectIndexOut=0
+    RB_enOut  MIX_EN_B  RB_selectIndexOut=1
+    RB_enIn   MIX_EN_OUT RB_selectIndexIn=0
     reset_microOp
 
 10000: ; STR [M] <- Rx
