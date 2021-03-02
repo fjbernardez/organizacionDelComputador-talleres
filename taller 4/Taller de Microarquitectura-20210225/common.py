@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 #01 ADD  00001 XXXYYY-----
 #02 ADC  00010 XXXYYY-----
@@ -10,6 +10,10 @@
 #06 XOR  00110 XXXYYY-----
 #07 CMP  00111 XXXYYY-----
 #08 MOV  01000 XXXYYY-----
+
+#09 SIG  01001 XXX--------
+#10 NEG  01010 XXX--------
+#11 MIX  01011 XXXYYY-----
 
 #16 STR  10000 XXXMMMMMMMM
 #17 LOAD 10001 XXXMMMMMMMM
@@ -26,12 +30,12 @@
 
 #31 SET  11111 XXXIIIIIIII
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import sys
 import os
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Tokenize function
 
 def tokenizator(filename):
@@ -49,9 +53,9 @@ def tokenizator(filename):
             c = f.read(1)
             if not c:
                 break
-            
+
             if not isComment:
-                
+
                 if c in blank:
                     if len(word)>0:
                         line=line+[word]
@@ -62,38 +66,47 @@ def tokenizator(filename):
                         line=[]
                     if c in comment:
                         isComment=True
-                        
+
                 elif c in reserve:
                     if len(word)>0:
                         line=line+[word]
                     word=""
                     line=line+[c]
-                    
+
                 else:
                     word=word+c
-                    
+
             else: # isComment
                 if c in newline:
                     isComment=False
     return tokens
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Assembly code constants
 
-type_RR = ["ADD","ADC","SUB","AND","OR" ,"XOR","CMP","MOV"]
+# ejercicio 6.c -> MIX
+type_RR = ["ADD","ADC","SUB","AND","OR" ,"XOR","CMP","MOV","MIX"]
 type_RM = ["STR","LOAD"]
 type_M  = ["JMP","JC","JZ","JN"]
-type_R  = ["INC","DEC"]
+# ejercicio 6.a -> SIG
+# ejercicio 6.b -> NEG
+type_R  = ["INC","DEC","SIG","NEG"]
 type_RS = ["SHR","SHL"]
 type_RI = ["SET"]
 def_DB  = ["DB"]
 
 opcodes = {"ADD" : 1, "ADC" : 2, "SUB" : 3, "AND"  : 4, "OR"  : 5, "XOR" : 6, "CMP" : 7, "MOV" : 8,
+            # ejercicio 6.a
+           "SIG" : 9,
+           # ejercicio 6.b
+           "NEG": 10,
+           # ejercicio 6.c
+           "MIX": 11,
            "STR" :16, "LOAD":17, "STRr":18, "LOADr":19,
            "JMP" :20, "JC"  :21, "JZ"  :22, "JN"   :23,
            "INC" :24, "DEC" :25, "SHR" :26, "SHL"  :27, "SET" :31}
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Assembly code functions
 
 def removeLabels(tokens):
@@ -145,7 +158,7 @@ def mem2num(mem,labels):
             elif mem[-1:] == "b":
                 val = int(mem[:-1],2)
             else:
-                val = int(mem,10)        
+                val = int(mem,10)
         except ValueError:
             print("Error: Can not convert \"" + mem + "\"")
             return None
@@ -160,7 +173,7 @@ def shf2num(num):
         return val
     print("Error: \"" + num + "\" out of range (0-7)" )
     raise ValueError()
-    
+
 def buidInst(d):
     n = 0
     if "O" in d:
@@ -180,12 +193,12 @@ def appendParse(parseBytes,parseHuman,i,n):
     parseBytes.append(n >> 8)
     parseBytes.append(n & 0xFF)
     parseHuman.append([addr,i])
-    
+
 def parseInstructions(instructions,labels):
     parseBytes=[]
     parseHuman=[]
     for i in instructions:
-        
+
         try:
             # AAA Rx,Ry || Rx <= Rx AAA Ry
             if i[0] in type_RR:
@@ -244,18 +257,18 @@ def parseInstructions(instructions,labels):
             elif i[0] in def_DB:
                 parseHuman.append( [len(parseBytes),i] )
                 parseBytes.append( mem2num(i[1],labels) )
-                
+
             ##
             else:
                 raise ValueError("Error: Unknown instruction \"" + i[0] + "\"")
                 sys.exit(1)
-                
+
         except ValueError as err:
             if len(err.args)>0:
                 print(err.args[0])
             print("Error: Instruction: " +  " ".join(i))
             sys.exit(1)
-            
+
     return parseBytes,parseHuman
 
 def printCode(output,parse):
@@ -265,23 +278,23 @@ def printCode(output,parse):
         f.write('%02x ' % i )
         f.write("\n")
     f.close()
-    
+
 def printHuman(outputH,parseHuman,labels,filename):
     f = open(outputH,"w")
-    
+
     inverseLabels = {}
     for name, addr in labels.items():
         if addr in inverseLabels:
             inverseLabels[addr].append(name)
         else:
             inverseLabels[addr] = [name]
-            
+
     allNames = list(map(lambda x: ", ".join(x),  inverseLabels.values() ))
     if len(allNames)==0:
         maxName = 0
     else:
         maxName = max(map(len,allNames))
-    
+
     for p in parseHuman:
         if p[0] in inverseLabels:
             f.write( (", ".join(inverseLabels[p[0]])).rjust(maxName) )
@@ -292,7 +305,7 @@ def printHuman(outputH,parseHuman,labels,filename):
         f.write("\n")
     f.close()
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Build micro operations constants
 
 signals={ "RB_enIn"           :  0,
@@ -322,30 +335,31 @@ signals={ "RB_enIn"           :  0,
           "DE_enOutImm"       : 24,
           "DE_loadL"          : 25,
           "DE_loadH"          : 26,
-          "RESERVED27"        : 27,
-          "RESERVED28"        : 28,
-          "RESERVED29"        : 29,
+          # ejercicio 6.c
+          "MIX_EN_B"          : 27,
+          "MIX_EN_A"          : 28,
+          "MIX_EN_OUT"        : 29,
           "load_microOp"      : 30,
           "reset_microOp"     : 31 }
 
-ALUops={ "RESERVED0"  : 0, 
-         "ADD"        : 1, 
-         "ADC"        : 2, 
-         "SUB"        : 3, 
-         "AND"        : 4, 
-         "OR"         : 5, 
-         "XOR"        : 6, 
-         "CMP"        : 7, 
-         "SHR"        : 8, 
-         "SHL"        : 9, 
-         "RESERVED10" : 10, 
-         "RESERVED11" : 11, 
+ALUops={ "RESERVED0"  : 0,
+         "ADD"        : 1,
+         "ADC"        : 2,
+         "SUB"        : 3,
+         "AND"        : 4,
+         "OR"         : 5,
+         "XOR"        : 6,
+         "CMP"        : 7,
+         "SHR"        : 8,
+         "SHL"        : 9,
+         "RESERVED10" : 10,
+         "RESERVED11" : 11,
          "cte0x00"    : 12,
          "cte0x01"    : 13,
          "cte0x02"    : 14,
          "cte0xFF"    : 15 }
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Build micro operations functions
 
 def val2num(val):
@@ -366,7 +380,7 @@ def str2signal(signal):
     else:
         print("Error: Signal \"" + signal + "\" unknown")
         sys.exit(1)
-    
+
 def parseOpcodes(tokens):
     microCode=[]
     label=""
@@ -396,7 +410,7 @@ def codeValues(microCode):
             micro.append(s)
         code[addr]=micro
     return code
-            
+
 def printMicroCode(output,code):
     f = open(output,"w")
     f.write("v2.0 raw\n")
@@ -405,7 +419,7 @@ def printMicroCode(output,code):
             for m in code[i]:
                 f.write('%08x' % m)
                 f.write(" ")
-            f.write(str(16-len(code[i]))+"*0\n") 
+            f.write(str(16-len(code[i]))+"*0\n")
         else:
             f.write("80000000 15*0\n")
     f.close()
