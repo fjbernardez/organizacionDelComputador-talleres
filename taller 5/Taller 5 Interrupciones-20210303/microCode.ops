@@ -1,12 +1,20 @@
 00000:
-    I_microOp load_microOp
-    PC_enOut MM_enAddr
+    I_microOp load_microOp ; antes iniciar, consultar por interrupcion.
+    PC_enOut MM_enAddr ;
     MM_enOut DE_loadH PC_inc
     PC_enOut MM_enAddr
     MM_enOut DE_loadL PC_inc
     load_microOp
     reset_microOp
-    reset_microOp ; COMPLETAR
+
+    ; primera microInstruccion de Interrupcion debajo:
+    ALU_OP=cte0xFF ALU_enOut MM_enAddr ; habilitar constante 0xFF y guarda en addr
+    PC_enOut PC_enOut MM_load ; saco el valor de PC, y lo guardo en 0xFF
+    IC_cli IC_inta ; apago flag I e informo con INTA que se atiende la interrupcion
+    ALU_OP=cte0x00 ALU_enOut MM_enAddr; habilitar constante 0x00 y guarda en addr
+    MM_enOut PC_load; seteo PC = [0x00]
+
+    reset_microOp
 
 00001: ; ADD
     RB_enOut  ALU_enA  RB_selectIndexOut=0
@@ -21,14 +29,14 @@
     ALU_OP=ADC ALU_opW
     RB_enIn   ALU_enOut RB_selectIndexIn=0
     reset_microOp
-    
+
 00011: ; SUB
     RB_enOut  ALU_enA  RB_selectIndexOut=0
     RB_enOut  ALU_enB  RB_selectIndexOut=1
     ALU_OP=SUB ALU_opW
     RB_enIn   ALU_enOut RB_selectIndexIn=0
     reset_microOp
-  
+
 00100: ; AND
     RB_enOut  ALU_enA  RB_selectIndexOut=0
     RB_enOut  ALU_enB  RB_selectIndexOut=1
@@ -42,24 +50,24 @@
     ALU_OP=OR ALU_opW
     RB_enIn   ALU_enOut RB_selectIndexIn=0
     reset_microOp
-  
+
 00110: ; XOR
     RB_enOut  ALU_enA  RB_selectIndexOut=0
     RB_enOut  ALU_enB  RB_selectIndexOut=1
     ALU_OP=XOR ALU_opW
     RB_enIn   ALU_enOut RB_selectIndexIn=0
     reset_microOp
-  
+
 00111: ; CMP
     RB_enOut  ALU_enA  RB_selectIndexOut=0
     RB_enOut  ALU_enB  RB_selectIndexOut=1
     ALU_OP=CMP ALU_opW
     reset_microOp
-  
+
 01000: ; MOV
     RB_enOut RB_selectIndexOut=1 RB_enIn RB_selectIndexIn=0
     reset_microOp
-    
+
 01001: ; SIG
     RB_enOut ALU_enA RB_selectIndexOut=0
     ALU_OP=cte0x01
@@ -67,7 +75,7 @@
     ALU_OP=ADD ALU_opW
     RB_enIn   ALU_enOut RB_selectIndexIn=0
     reset_microOp
-    
+
 01010: ; NEG
     RB_enOut  ALU_enA  RB_selectIndexOut=0
     ALU_OP=cte0xFF
@@ -86,7 +94,7 @@
     ALU_OP=MIX ALU_opW
     RB_enIn   ALU_enOut RB_selectIndexIn=0
     reset_microOp
-  
+
 10000: ; STR [M] <- Rx
     DE_enOutImm MM_enAddr
     RB_enOut  MM_load RB_selectIndexOut=0
@@ -104,7 +112,7 @@
 
 10011: ; LOAD Rx <- [Ry]
     RB_enOut RB_selectIndexOut=1 MM_enAddr
-    RB_enIn  RB_selectIndexOut=0 MM_enOut 
+    RB_enIn  RB_selectIndexOut=0 MM_enOut
     reset_microOp
 
 10100: ; JMP
@@ -116,13 +124,13 @@
     reset_microOp
     DE_enOutImm PC_load
     reset_microOp
-    
+
 10110: ; JZ
     JZ_microOp load_microOp
     reset_microOp
     DE_enOutImm PC_load
     reset_microOp
-    
+
 10111: ; JN
     JN_microOp load_microOp
     reset_microOp
@@ -136,7 +144,7 @@
     ALU_OP=ADD ALU_opW
     RB_enIn   ALU_enOut RB_selectIndexIn=0
     reset_microOp
-  
+
 11001: ; DEC
     RB_enOut  ALU_enA  RB_selectIndexOut=0
     ALU_OP=cte0x01 ALU_opW
@@ -150,7 +158,7 @@
     ALU_OP=SHR ALU_opW
     RB_enIn   ALU_enOut RB_selectIndexIn=0
     reset_microOp
-  
+
 11011: ; SHL
     RB_enOut ALU_enA
     ALU_OP=SHL ALU_opW
@@ -158,13 +166,18 @@
     reset_microOp
 
 11100: ; STI
+    IC_sti
     reset_microOp ; COMPLETAR
 
 11101: ; CLI
-    reset_microOp ; COMPLETAR
+    IC_cli
+    reset_microOp
 
 11110: ; IRET
-    reset_microOp ; COMPLETAR
+    IC_sti ; habilita las interrupciones de forma sincrona
+    ALU_OP=cte0xFF ALU_enOut MM_enAddr ; habilitar constante 0xFF y guarda en addr
+    MM_enOut PC_load ; PC = [0xFF]
+    reset_microOp
 
 11111: ; SET
     DE_enOutImm RB_enIn
