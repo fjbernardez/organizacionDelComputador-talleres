@@ -207,6 +207,7 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <wire from="(550,800)" to="(580,800)"/>
     <wire from="(120,60)" to="(140,60)"/>
     <wire from="(770,630)" to="(840,630)"/>
+    <wire from="(480,270)" to="(490,270)"/>
     <wire from="(280,150)" to="(290,150)"/>
     <wire from="(1150,760)" to="(1180,760)"/>
     <wire from="(30,670)" to="(170,670)"/>
@@ -507,12 +508,6 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     </comp>
     <comp lib="0" loc="(140,230)" name="Tunnel">
       <a name="label" val="RB_enIn"/>
-    </comp>
-    <comp lib="0" loc="(490,270)" name="Tunnel">
-      <a name="facing" val="east"/>
-      <a name="width" val="3"/>
-      <a name="label" val="flags"/>
-      <a name="labelfont" val="SansSerif italic 12"/>
     </comp>
     <comp lib="0" loc="(1180,590)" name="Tunnel">
       <a name="facing" val="south"/>
@@ -927,6 +922,12 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
     <comp lib="5" loc="(840,750)" name="Hex Digit Display"/>
     <comp lib="5" loc="(340,130)" name="Hex Digit Display"/>
     <comp lib="5" loc="(790,600)" name="Hex Digit Display"/>
+    <comp lib="0" loc="(480,270)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="width" val="3"/>
+      <a name="label" val="flags"/>
+      <a name="labelfont" val="SansSerif italic 12"/>
+    </comp>
     <comp lib="0" loc="(80,550)" name="Tunnel">
       <a name="facing" val="north"/>
       <a name="label" val="clk"/>
@@ -3167,7 +3168,27 @@ This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
       <a name="addrWidth" val="9"/>
       <a name="dataWidth" val="32"/>
       <a name="contents">addr/data: 9 32
-0
+40080000 400040 4200010 400040 2200010 40000000 80000000 f440
+800020 30000000 c440 100010 80000000 0 0 0
+102 20a 1800 401 80000000 11*0 102 20a
+2800 401 80000000 11*0 102 20a 3800 401
+80000000 11*0 102 20a 4800 401 80000000 11*0
+102 20a 5800 401 80000000 11*0 102 20a
+6800 401 80000000 11*0 102 20a 7800 80000000
+12*0 b 80000000 14*0 102 d000 600 1800
+401 80000000 10*0 102 f000 600 6000 500
+d000 600 1000 401 80000000 6*0 102 20a
+b800 401 80000000 11*0 80000000 15*0 80000000 15*0
+80000000 15*0 80000000 15*0 1000040 22 80000000 13*0
+1000040 11 80000000 13*0 42 2a 80000000 13*0
+4a 11 80000000 13*0 1100000 80000000 14*0 40010000
+80000000 1100000 80000000 12*0 40020000 80000000 1100000 80000000
+12*0 40040000 80000000 1100000 80000000 12*0 102 d800
+600 1800 401 80000000 10*0 102 d800 600
+3800 401 80000000 10*0 102 8800 401 80000000
+12*0 102 9800 401 80000000 12*0 8000000 80000000
+14*0 10000000 80000000 14*0 8000000 f440 100010 80000000
+12*0 1000001 80000000
 </a>
     </comp>
     <comp lib="0" loc="(130,690)" name="Tunnel">
