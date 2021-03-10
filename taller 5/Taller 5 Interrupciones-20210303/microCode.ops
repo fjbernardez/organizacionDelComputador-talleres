@@ -8,9 +8,9 @@
     reset_microOp
 
     ; primera microInstruccion de Interrupcion debajo:
+    IC_cli IC_inta ; apago flag I e informo con INTA que se atiende la interrupcion. Primer paso por no poder atender otra
     ALU_OP=cte0xFF ALU_enOut MM_enAddr ; habilitar constante 0xFF y guarda en addr
     PC_enOut PC_enOut MM_load ; saco el valor de PC, y lo guardo en 0xFF
-    IC_cli IC_inta ; apago flag I e informo con INTA que se atiende la interrupcion
     ALU_OP=cte0x00 ALU_enOut MM_enAddr; habilitar constante 0x00 y guarda en addr
     MM_enOut PC_load; seteo PC = [0x00]
 
@@ -167,16 +167,16 @@
 
 11100: ; STI
     IC_sti
-    reset_microOp ; COMPLETAR
+    reset_microOp
 
 11101: ; CLI
     IC_cli
     reset_microOp
 
 11110: ; IRET
-    IC_sti ; habilita las interrupciones de forma sincrona
     ALU_OP=cte0xFF ALU_enOut MM_enAddr ; habilitar constante 0xFF y guarda en addr
     MM_enOut PC_load ; PC = [0xFF]
+    IC_sti ; habilita las interrupciones de forma sincrona
     reset_microOp
 
 11111: ; SET

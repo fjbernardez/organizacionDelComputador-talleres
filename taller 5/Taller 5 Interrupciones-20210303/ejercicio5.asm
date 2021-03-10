@@ -25,6 +25,7 @@ JMP poolingBocina
 
 incrementaIntensidadBocina:
 SIG R2 ; incremento intensidad de la bocina
+SET R3, 0x00
 JMP poolingBocina ; retorno al ciclo
 
 ; la logica del control de velodidad es cambiar a la velocidad opuesta
