@@ -1,0 +1,43 @@
+Tipos de cache:
+
+  Totalmente asociativa:
+    Permite que cada linea de memoria
+    principal pueda cargarse en cualquier linea de la cache.
+    Cada una de estas lineas identifica
+    univocamente una linea de la memoria principal por medio del tag o
+    etiqueta.
+    Para decidir si una linea esta en la
+    cache se debe examinar todas los
+    tags almacenados en la cache.
+
+    #bloques = memoria [bytes] / lineasCache [bytes]
+    lineasCache = memoriaCache [bytes] / #lineasCache [unidades]
+
+    si 4 bloques => 2 bit tags
+
+    0xA --> 10 10  => 10 =  tag   10 = indice
+
+  Correspondencia Directa:
+    Consiste en partir la memoria principal en bloques del tamaño de la
+    cache. Luego, cada linea del bloque tiene su lugar especifico en la
+    cache.
+    Por cada linea tengo que guardar a
+    que bloque pertenece.
+
+    #bloques = memoria [bytes] / cache [bytes]
+
+    0x6 --> 0 1 10 => 0 = tag   1 = linea   10 = indice
+
+  Asociativo por conjuntos de N vías:
+    Es un tipo de cache que combina
+    caracteristicas de los dos tipos de
+    cache que vimos previamente.
+    Es muy similar a la Cache de Correspondencia Directa, pero con
+    el agregado de vias que permiten
+    persistir las lineas de memoria en
+    cache por mas tiempo
+
+    #bloques = memoria [bytes] / via [bytes/unidades]
+    via = cache [bytes] / # vias [unidades]
+
+    0x2 = 0010  --> 00 = tag  1 = set   0 = indice(numero de via)
